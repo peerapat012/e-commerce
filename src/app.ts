@@ -9,6 +9,8 @@ const app: Express = express()
 
 const port: number = 3000
 
+app.use(express.json())
+
 app.use("/healthcheck", healthcheckRoute);
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
