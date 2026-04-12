@@ -1,16 +1,21 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es5",
-      "es6",
-      "dom"
-    ],
-    "target": "es5",
-    "ignoreDeprecations": "6.0",
+    "target": "ES2022",
     "module": "commonjs",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "lib": ["ES2022"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "experimentalDecorators": true,
-    "strict": true
-  }
+    "emitDecoratorMetadata": true,
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
