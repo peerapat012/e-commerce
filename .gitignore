@@ -8,6 +8,7 @@
 # environment variables
 .env
 .env.*
+.env.docker
 
 # logs
 logs

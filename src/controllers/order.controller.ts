@@ -59,6 +59,10 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
     const channel = getChannel();
 
+    await channel.assertQueue("order_created", {
+        durable: true,
+    });
+
     channel.sendToQueue("order_created", Buffer.from(JSON.stringify({
         orderId: order.id,
         userId: order.user.id,
