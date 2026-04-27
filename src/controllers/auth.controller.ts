@@ -17,6 +17,16 @@ export const createUser = async (req: Request, res: Response) => {
 
     const {name, email, password} = req.body;
 
+    const existUser = await repo.findOne({
+        where: {
+            email: email,
+        }
+    })
+
+    if(existUser){
+        return res.status(400).send({message: "Email already exist"})
+    }
+
     // hash password
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);
@@ -32,7 +42,7 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(201).send({message: "User created", user: user})
 }
 
-export const login = async (req: Request, res: Response) => {
+export const signin = async (req: Request, res: Response) => {
     const {email, password} = req.body;
 
     const user = await repo.findOne({
