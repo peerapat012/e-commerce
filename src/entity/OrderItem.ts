@@ -5,7 +5,7 @@ import {uuidv7} from "uuidv7";
 import {BaseEntity} from "./Base";
 
 @Entity()
-@Index(["order", "product"])
+@Index(["order", "productId"])
 export class OrderItem extends BaseEntity{
     @PrimaryColumn()
     id: string = uuidv7();
@@ -13,12 +13,15 @@ export class OrderItem extends BaseEntity{
     @ManyToOne(() => Order, (order) => order.items)
     order!: Order;
 
-    @ManyToOne(() => Product, (product) => product.orderItems)
-    product!: Product;
+    @Column()
+    productId!: string;
 
     @Column()
-    quantity!: number;
+    productName!: string;
 
     @Column("decimal")
     price!: number;
+
+    @Column()
+    quantity!: number;
 }

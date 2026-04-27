@@ -22,7 +22,4 @@ export class Product extends BaseEntity {
 
     @OneToMany(() => CartItem, (item) => item.product)
     cartItems!: CartItem[];
-
-    @OneToMany(() => OrderItem, (item) => item.product)
-    orderItems!: OrderItem[];
 }
