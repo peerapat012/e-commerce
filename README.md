@@ -133,46 +133,65 @@ WHERE id = ? AND stock >= ?
 
 ## 🚀 Getting Started
 
-### 1. Install dependencies
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js (for local development, optional)
+
+### 1. Clone the repository
 
 ```bash
-npm install
+git clone <your-repo-url>
+cd e-commerce
 ```
 
 ### 2. Setup environment
 
+Create a `.env.docker` file in the root directory:
+
 ```env
-DB_HOST=localhost
+DB_HOST=postgres
 DB_PORT=5432
 DB_USER=postgres
 DB_PASS=postgres
 DB_NAME=db
 
-RABBITMQ_URL=amqp://admin:password123@localhost:5672
+RABBITMQ_URL=amqp://admin:password123@rabbitmq:5672
 
 ACCESS_SECRET=your_access_secret
 REFRESH_SECRET=your_refresh_secret
 ```
 
-### 3. Run services
-
-#### Start API
+### 3. Run with Docker
 
 ```bash
-npm run dev
+docker-compose up --build
 ```
 
-#### Start Worker
+This will start:
+- PostgreSQL database
+- RabbitMQ message broker
+- Your Node.js application (API + Worker)
+
+The API will be available at `http://localhost:3000`
+
+### Alternative: Manual Setup
+
+If you prefer running without Docker:
+
+1. Install dependencies
 
 ```bash
-npm run worker
+npm install
 ```
 
-#### Start RabbitMQ (Docker)
+2. Setup `.env` file (similar to `.env.docker` but adjust hosts to `localhost`)
 
-```bash
-docker-compose up
-```
+3. Start services manually:
+
+- Start PostgreSQL & RabbitMQ (via Docker or locally)
+- Run API: `npm run dev`
+- Run Worker: `npm run worker`
 
 ---
 
