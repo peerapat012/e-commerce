@@ -5,6 +5,7 @@ import { Cart } from '../entity/Cart';
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { CartItem } from '../entity/CartItem';
+import { getChannel } from '../utils/rabbitmq';
 
 export const createOrder = async (req: AuthRequest, res: Response) => {
     const user = req.user;
@@ -55,6 +56,17 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
         return order;
     });
+
+    const channel = getChannel();
+
+    channel.sendToQueue("order_created", Buffer.from(JSON.stringify({
+        orderId: order.id,
+        userId: order.user.id,
+    })),
+        {
+            persistent: true
+        }
+    );
 
     return res.status(201).json({ message: "order created successfully", orderId: order.id })
 }
