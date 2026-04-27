@@ -1,9 +1,10 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, PrimaryColumn, Index} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, PrimaryColumn, Index, Unique} from "typeorm";
 import {Cart} from "./Cart";
 import {Product} from "./Product";
 import {uuidv7} from "uuidv7";
 import {BaseEntity} from "./Base";
 
+@Unique(["cart", "product"]) // composite unique constraint
 @Entity()
 @Index(["cart", "product"]) // composite index
 export class CartItem extends BaseEntity {

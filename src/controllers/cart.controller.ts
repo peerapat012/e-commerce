@@ -3,9 +3,11 @@ import { Cart } from "../entity/Cart";
 import { Request, Response } from "express";
 import { CartItem } from "../entity/CartItem";
 import { AuthRequest } from "../middleware/auth.middleware";
+import { Product } from "../entity/Product";
 
 const cartRepository = AppDataSource.getRepository(Cart);
 const cartItemRepository = AppDataSource.getRepository(CartItem);
+const productRepository = AppDataSource.getRepository(Product);
 
 export const addToCart = async (req: AuthRequest, res: Response) => {
     const { productId } = req.body;
@@ -31,29 +33,48 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
         cart = await cartRepository.save(cart);
     }
 
-    // check productItem exist
-
-    const existProductItem = await cartItemRepository.findOne({
+    //check if product exist
+    const existProduct = await productRepository.findOne({
         where: {
-            cart: { id: cart.id },
-            product: { id: productId }
+            id: productId,
+        },
+    })
+
+    if(!existProduct) {
+        return res.status(404).json({ message: "product not found" })
+    }
+
+    // check cartItem exist
+    const existCartItem = await cartItemRepository.findOne({
+        where: {
+            cart: {id: cart.id},
+            product: {id: existProduct.id}
         },
     });
 
-    if (existProductItem) {
-        existProductItem.quantity += 1;
-        await cartItemRepository.save(existProductItem);
+    if (existCartItem) {
+        existCartItem.quantity += 1;
+        await cartItemRepository.save(existCartItem);
     } else {
-        const newProductItem = cartItemRepository.create({
-            cart: { id: cart.id },
-            product: { id: productId },
+        const newCartItem = cartItemRepository.create({
+            cart: cart,
+            product: existProduct,
             quantity: 1,
         });
 
-        await cartItemRepository.save(newProductItem);
+        await cartItemRepository.save(newCartItem);
     }
 
-    return res.status(200).json({ cart: cart })
+    const updateCart = await cartRepository.findOne({
+        where: {
+            id: cart.id,
+        },
+        relations: {
+            items: true,
+        }
+    })
+
+    return res.status(200).json({ cart: updateCart })
 }
 
 export const removeFromCart = async (req: AuthRequest, res: Response) => {
@@ -76,10 +97,20 @@ export const removeFromCart = async (req: AuthRequest, res: Response) => {
         return res.status(404).json({ message: "cart not found" })
     }
 
+    const existProduct = await productRepository.findOne({
+        where: {
+            id: productId,
+        }
+    })
+
+    if (!existProduct) {
+        return res.status(404).json({ message: "product not found" })
+    }
+
     const existProductItem = await cartItemRepository.findOne({
         where: {
-            cart: { id: cart.id },
-            product: { id: productId }
+            cart: cart,
+            product: existProduct
         }
     })
 
@@ -110,10 +141,20 @@ export const decreaseOnce = async (req: AuthRequest, res: Response) => {
         return res.status(404).json({ message: "cart not found" })
     }
 
+    const existProduct = await productRepository.findOne({
+        where: {
+            id: productId
+        }
+    });
+
+    if (!existProduct) {
+        return res.status(404).json({ message: "product not found" });
+    }
+
     const existProductItem = await cartItemRepository.findOne({
         where: {
-            cart: { id: cart.id },
-            product: { id: productId }
+            cart: cart,
+            product: existProduct
         }
     });
 
